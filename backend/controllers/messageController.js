@@ -260,12 +260,22 @@ const sendMessage = async (req, res) => {
     // Increment unread count for recipient
     await conversation.incrementUnread(recipientUserId);
 
-    // Send real-time message via Socket.IO
+    // Send real-time message via Socket.IO (exclude sender)
     const io = getIO();
-    io.to(conversation._id.toString()).emit('receive_message', {
-      message: message.toObject(),
-      conversationId: conversation._id,
-    });
+    const senderSocketId = getSocketId(req.user._id.toString());
+    
+    // Broadcast to room but exclude sender
+    if (senderSocketId) {
+      io.to(conversation._id.toString()).except(senderSocketId).emit('receive_message', {
+        message: message.toObject(),
+        conversationId: conversation._id,
+      });
+    } else {
+      io.to(conversation._id.toString()).emit('receive_message', {
+        message: message.toObject(),
+        conversationId: conversation._id,
+      });
+    }
 
     // Send notification to recipient's room (always works if user is connected)
     sendMessageNotification(recipientUserId.toString(), {

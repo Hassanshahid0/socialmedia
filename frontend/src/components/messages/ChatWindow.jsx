@@ -47,7 +47,11 @@ const ChatWindow = ({ conversation, onBack, onMessageSent }) => {
   useEffect(() => {
     if (socket && conversation?._id) {
       const handleReceiveMessage = (data) => {
-        if (data.conversationId === conversation._id) {
+        // Only add message if it's from someone else (not self)
+        const messageFromSelf = data.message?.sender?._id === user._id || 
+                                data.message?.sender === user._id;
+        
+        if (data.conversationId === conversation._id && !messageFromSelf) {
           setMessages((prev) => [...prev, data.message]);
           scrollToBottom();
           
@@ -383,12 +387,15 @@ const ChatWindow = ({ conversation, onBack, onMessageSent }) => {
 
           {/* Text Input */}
           <input
+            ref={inputRef}
             type="text"
             value={newMessage}
             onChange={handleInputChange}
+            onKeyDown={handleKeyDown}
             placeholder="Type a message..."
             className="flex-1 px-4 py-2 bg-gray-100 rounded-full focus:outline-none focus:ring-2 focus:ring-primary-500 focus:bg-white transition-colors"
             disabled={sending}
+            autoFocus
           />
 
           {/* Send Button */}
