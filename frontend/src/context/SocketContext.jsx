@@ -13,10 +13,10 @@ export const SocketProvider = ({ children }) => {
 
   useEffect(() => {
     if (user && token) {
-      // Connect to Socket.IO server (use proxy in development)
+      // Connect to Socket.IO server
       const socketUrl = import.meta.env.PROD 
-        ? window.location.origin 
-        : 'http://localhost:5008';
+        ? (import.meta.env.VITE_SOCKET_URL || window.location.origin)
+        : 'http://localhost:5000';
       
       const newSocket = io(socketUrl, {
         auth: { token },
