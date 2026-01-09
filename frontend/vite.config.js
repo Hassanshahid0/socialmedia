@@ -8,20 +8,34 @@ export default defineConfig({
     port: 5173,
     proxy: {
       '/api': {
-        target: 'http://localhost:5008',
+        target: 'http://localhost:5000',
         changeOrigin: true,
       },
       '/uploads': {
-        target: 'http://localhost:5008',
+        target: 'http://localhost:5000',
         changeOrigin: true,
       },
       '/socket.io': {
-        target: 'http://localhost:5008',
+        target: 'http://localhost:5000',
         ws: true,
       },
     },
   },
   preview: {
     port: 5173,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:5000',
+        changeOrigin: true,
+      },
+      '/uploads': {
+        target: 'http://localhost:5000',
+        changeOrigin: true,
+      },
+      '/socket.io': {
+        target: 'http://localhost:5000',
+        ws: true,
+      },
+    },
   },
 });

@@ -50,6 +50,13 @@ EOF
 echo "==> Installing frontend dependencies and building"
 cd ../frontend
 npm ci
+
+# Create frontend .env for build
+cat > .env.production <<EOF
+VITE_API_URL=http://${IP_ADDR}:${BACKEND_PORT}/api
+VITE_SOCKET_URL=http://${IP_ADDR}:${BACKEND_PORT}
+EOF
+
 npm run build
 
 echo "==> Starting apps with PM2"
