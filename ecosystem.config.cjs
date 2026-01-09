@@ -12,7 +12,8 @@ module.exports = {
         CLIENT_URL: 'http://4.211.134.149:5173,https://4.211.134.149:5173',
         // Set these per environment
         MONGODB_URI: 'mongodb://127.0.0.1:27017/social_media_app',
-        JWT_SECRET: 'change_me_in_production'
+        JWT_SECRET: 'social_media_secret_key_2024_production',
+        JWT_EXPIRE: '30d'
       }
     },
     {

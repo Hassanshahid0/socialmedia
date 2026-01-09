@@ -21,8 +21,8 @@ const signup = async (req, res) => {
     // Check if user already exists
     const existingUser = await User.findOne({
       $or: [
-        { email: email.toLowerCase() },
-        { username: username.toLowerCase() },
+        { email: String(email).toLowerCase().trim() },
+        { username: String(username).toLowerCase().trim() },
       ],
     });
 
@@ -40,10 +40,10 @@ const signup = async (req, res) => {
 
     // Create new user
     const user = await User.create({
-      username: username.toLowerCase(),
-      email: email.toLowerCase(),
-      password,
-      fullName,
+      username: String(username).toLowerCase().trim(),
+      email: String(email).toLowerCase().trim(),
+      password: String(password),
+      fullName: String(fullName).trim(),
       role: userRole,
     });
 
@@ -85,7 +85,8 @@ const signup = async (req, res) => {
 
     res.status(500).json({
       success: false,
-      message: 'Server error during registration',
+      message: error.message || 'Server error during registration',
+      ...(process.env.NODE_ENV !== 'production' && { stack: error.stack }),
     });
   }
 };
@@ -167,7 +168,8 @@ const login = async (req, res) => {
     console.error('Login error:', error);
     res.status(500).json({
       success: false,
-      message: 'Server error during login',
+      message: error.message || 'Server error during login',
+      ...(process.env.NODE_ENV !== 'production' && { stack: error.stack }),
     });
   }
 };

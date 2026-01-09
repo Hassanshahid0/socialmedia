@@ -12,6 +12,26 @@ echo "==> Updating system packages"
 sudo apt-get update -y
 sudo apt-get install -y curl ca-certificates gnupg build-essential
 
+# Install MongoDB if not present
+if ! command -v mongod &> /dev/null; then
+    echo "==> MongoDB not found. Installing MongoDB 7.0..."
+    sudo apt-get install -y gnupg curl
+    curl -fsSL https://www.mongodb.org/static/pgp/server-7.0.asc | \
+       sudo gpg -o /usr/share/keyrings/mongodb-server-7.0.gpg \
+       --dearmor
+    echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-7.0.gpg ] https://repo.mongodb.org/apt/ubuntu $(lsb_release -cs)/mongodb-org/7.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-7.0.list
+    sudo apt-get update
+    sudo apt-get install -y mongodb-org
+    sudo systemctl start mongod
+    sudo systemctl enable mongod
+fi
+
+# Check MongoDB status
+if ! sudo systemctl is-active --quiet mongod; then
+    echo "❌ MongoDB failed to start. Please check logs: sudo journalctl -u mongod"
+    exit 1
+fi
+
 echo "==> Installing Node.js 22.x (NodeSource)"
 curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
 sudo apt-get install -y nodejs

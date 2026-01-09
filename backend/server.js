@@ -30,7 +30,7 @@ const server = createServer(app);
 initializeSocket(server);
 
 // Connect to MongoDB
-connectDB();
+await connectDB();
 
 // ===================
 // MIDDLEWARE
@@ -68,7 +68,9 @@ app.use(
       if (allowedOrigins.includes(origin)) {
         return callback(null, true);
       }
-      return callback(new Error('Not allowed by CORS'));
+      const error = new Error('Not allowed by CORS');
+      error.status = 403;
+      return callback(error);
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
